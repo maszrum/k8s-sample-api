@@ -1,0 +1,85 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sample-api-deployment
+  labels:
+    app: sample-api
+    k8s.io/part-of: k8s-sample-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: sample-api
+  template:
+    metadata:
+      labels:
+        app: sample-api
+        k8s.io/part-of: k8s-sample-api
+    spec:
+      containers:
+      - name: sample-api
+        image: sample-api:1
+        ports:
+        - containerPort: 8080
+        env:
+          - name: GeneralSettings__UseRedis
+            value: "true"
+          - name: GeneralSettings__RedisConnectionString
+            value: "redis:6379"
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sample-api-service
+  labels:
+    app: sample-api
+    k8s.io/part-of: k8s-sample-api
+spec:
+  selector:
+    app: sample-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+  type: ClusterIP
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: sample-api-gateway
+  labels:
+    app: sample-api
+    k8s.io/part-of: k8s-sample-api
+spec:
+  gatewayClassName: istio
+  listeners:
+  - name: http
+    port: 80
+    protocol: HTTP
+    allowedRoutes:
+      namespaces:
+        from: Same
+
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: sample-api-httproute
+  labels:
+    app: sample-api
+    k8s.io/part-of: k8s-sample-api
+  annotations:
+    networking.istio.io/service-type: ClusterIP
+spec:
+  parentRefs:
+  - name: sample-api-gateway
+  rules:
+  - matches:
+    - path:
+        type: PathPrefix
+        value: /
+    backendRefs:
+    - name: sample-api-service
+      port: 80
