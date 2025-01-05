@@ -3,5 +3,5 @@ namespace K8s.SampleApi;
 internal record CounterResponse(
     Guid AppInstanceId,
     string SessionId,
-    IReadOnlyList<string> ActiveInstances,
+    IReadOnlySet<string> ActiveInstances,
     int Counter);

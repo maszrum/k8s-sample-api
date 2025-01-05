@@ -9,13 +9,17 @@ using Microsoft.AspNetCore.DataProtection.AuthenticatedEncryption.ConfigurationM
 using Microsoft.AspNetCore.Mvc;
 using StackExchange.Redis;
 
-var appInstanceId = Guid.NewGuid();
-
 var builder = WebApplication.CreateBuilder(args);
+
+var appInstanceId = new AppInstanceIdProvider();
+
+builder.Services.AddSingleton(appInstanceId);
 
 var generalSettings = builder.Configuration
     .GetSection(nameof(GeneralSettings))
     .Get<GeneralSettings>()!;
+
+builder.Services.AddSingleton(generalSettings);
 
 builder.Services.ConfigureHttpJsonOptions(options =>
 {
@@ -41,10 +45,18 @@ if (generalSettings.UseRedis)
     {
         options.Configuration = generalSettings.RedisConnectionString;
     });
+
+    builder.Services
+        .AddSingleton<RedisActiveInstancesContainer>()
+        .AddSingleton<IActiveInstancesResolver>(sp => sp.GetRequiredService<RedisActiveInstancesContainer>());
+
+    builder.Services.AddHostedService<RedisKeepAliveBackgroundService>();
 }
 else
 {
     builder.Services.AddDistributedMemoryCache();
+
+    builder.Services.AddSingleton<IActiveInstancesResolver, SingleNodeInstanceResolver>();
 }
 
 builder.Services.AddSession(options =>
@@ -65,7 +77,7 @@ if (generalSettings.UseConsul)
         .AddConsulServiceRegistration(registration =>
         {
             registration.Name = Constants.ConsulServiceName;
-            registration.ID = appInstanceId.ToString("D");
+            registration.ID = appInstanceId.InstanceId;
             registration.Address = generalSettings.ConsulSelfServiceAddress;
             registration.Port = generalSettings.ConsulSelfServicePort;
 
@@ -87,14 +99,10 @@ if (generalSettings.UseConsul)
             };
         });
 
-    builder.Services.AddSingleton<IActiveInstancesResolver, ConsulActiveInstancesResolver>();
-
     builder.Services.AddSingleton<ISynchronizationStrategy, ConsulDistributedLock>();
 }
 else
 {
-    builder.Services.AddSingleton<IActiveInstancesResolver>(new SingleNodeInstanceResolver(appInstanceId));
-
     builder.Services.AddSingleton<ISynchronizationStrategy, LocalLock>();
 }
 
@@ -120,12 +128,11 @@ app.MapGet(
                 httpContext.Session.SetInt32(Constants.UserCounterCacheKey, newCounter);
             },
             cancellationToken: CancellationToken.None);
-        var activeInstanceIds = await activeInstancesResolver.GetActiveInstances();
 
         return new CounterResponse(
-            appInstanceId,
+            appInstanceId.InstanceGuid,
             httpContext.Session.Id,
-            activeInstanceIds,
+            activeInstancesResolver.GetActiveInstances(),
             newCounter);
     });
 

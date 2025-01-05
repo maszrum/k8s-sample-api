@@ -2,10 +2,9 @@ using System.Collections.Immutable;
 
 namespace K8s.SampleApi;
 
-internal class SingleNodeInstanceResolver(Guid singleNodeInstanceId) : IActiveInstancesResolver
+internal class SingleNodeInstanceResolver(AppInstanceIdProvider appInstanceIdProvider) : IActiveInstancesResolver
 {
-    private readonly string _singleNodeInstanceId = singleNodeInstanceId.ToString("D");
+    private readonly ImmutableHashSet<string> _appInstanceIdProvider = [appInstanceIdProvider.InstanceId];
 
-    public Task<ImmutableArray<string>> GetActiveInstances() =>
-        Task.FromResult(ImmutableArray.Create(_singleNodeInstanceId));
+    public ImmutableHashSet<string> GetActiveInstances() => _appInstanceIdProvider;
 }

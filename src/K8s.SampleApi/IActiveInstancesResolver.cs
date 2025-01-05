@@ -4,5 +4,5 @@ namespace K8s.SampleApi;
 
 internal interface IActiveInstancesResolver
 {
-    Task<ImmutableArray<string>> GetActiveInstances();
+    ImmutableHashSet<string> GetActiveInstances();
 }
