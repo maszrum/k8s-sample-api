@@ -18,11 +18,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "etc", "etc", "{7D9E85B0-CF1
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "k8s-kind", "k8s-kind", "{29634738-35B4-49F4-B3D9-E9052D221CB4}"
 	ProjectSection(SolutionItems) = preProject
-		k8s-kind\commands.md = k8s-kind\commands.md
 		k8s-kind\three-node-cluster.yaml = k8s-kind\three-node-cluster.yaml
 		k8s-kind\sample-api.yaml = k8s-kind\sample-api.yaml
 		k8s-kind\istio-profile.yaml = k8s-kind\istio-profile.yaml
 		k8s-kind\redis.yaml = k8s-kind\redis.yaml
+		k8s-kind\README.md = k8s-kind\README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "haproxy", "haproxy", "{AF5F9977-3E6A-4DE0-A5FE-E7F029439C2B}"
