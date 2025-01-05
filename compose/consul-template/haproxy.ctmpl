@@ -1,0 +1,42 @@
+global
+    log stdout format raw local0
+    maxconn 100
+    daemon
+
+defaults
+    log     global
+    option  httplog
+    option  dontlognull
+    timeout connect 5s
+    timeout client  50s
+    timeout server  50s
+
+frontend sample_api_frontend
+    bind *:80
+    mode http
+    use_backend stats_backend if { path_beg /stats }
+    default_backend sample_api_backend
+
+backend stats_backend
+    mode http
+    stats enable
+    stats uri /stats
+    stats refresh 3s
+
+backend sample_api_backend
+    mode http
+    balance roundrobin
+
+    option httpchk
+    http-check connect alpn HTTP/1.1
+    http-check send meth GET uri /health hdr host 127.0.0.1
+    http-check expect status 200
+
+{{- $services := service "sample-api|any" }}
+{{- if gt (len $services) 0 }}
+    {{- range $services }}
+    server {{ .ID }} {{ .Address }}:{{ .Port }} check
+    {{- end }}
+{{- else }}
+    http-request deny deny_status 503
+{{- end }}

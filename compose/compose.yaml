@@ -1,0 +1,85 @@
+services:
+
+  consul:
+    build:
+      context: ./consul/
+      dockerfile: ./Dockerfile
+    container_name: consul
+    ports:
+      - "8500:8500"
+      - "8600:8600/udp"
+
+  consul-template:
+    build:
+      context: ./consul-template/
+      dockerfile: ./Dockerfile
+    container_name: consul-template
+    environment:
+      - CONSUL_ADDR=consul:8500
+      - OUTPUT_FILE=/shared/haproxy.cfg
+    volumes:
+      - consul-template-data:/shared:rw
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - consul
+
+  haproxy:
+    build:
+      context: ./haproxy/
+      dockerfile: ./Dockerfile
+    container_name: haproxy
+    ports:
+      - "8080:80"
+    volumes:
+      - consul-template-data:/usr/local/etc/haproxy
+    depends_on:
+      - consul-template
+
+  redis:
+    image: redis:7.4.1-alpine
+    expose:
+      - 6379
+    volumes:
+      - redis-data:/data
+
+  sample-api-1:
+    build:
+      context: ../src/K8s.SampleApi/
+      dockerfile: ./Dockerfile
+    container_name: sample-api-1
+    environment:
+      - GeneralSettings__UseRedis=true
+      - GeneralSettings__RedisConnectionString=redis:6379
+      - GeneralSettings__UseConsul=true
+      - GeneralSettings__ConsulAddress=http://consul:8500
+      - GeneralSettings__ConsulSelfServiceScheme=http
+      - GeneralSettings__ConsulSelfServiceAddress=sample-api-1
+      - GeneralSettings__ConsulSelfServicePort=8080
+    expose:
+      - 8080
+    depends_on:
+      - redis
+      - consul
+
+  sample-api-2:
+    build:
+      context: ../src/K8s.SampleApi/
+      dockerfile: ./Dockerfile
+    container_name: sample-api-2
+    environment:
+      - GeneralSettings__UseRedis=true
+      - GeneralSettings__RedisConnectionString=redis:6379
+      - GeneralSettings__UseConsul=true
+      - GeneralSettings__ConsulAddress=http://consul:8500
+      - GeneralSettings__ConsulSelfServiceScheme=http
+      - GeneralSettings__ConsulSelfServiceAddress=sample-api-2
+      - GeneralSettings__ConsulSelfServicePort=8080
+    expose:
+      - 8080
+    depends_on:
+      - redis
+      - consul
+
+volumes:
+  redis-data:
+  consul-template-data:

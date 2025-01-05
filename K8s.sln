@@ -1,0 +1,59 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "K8s.SampleApi", "src\K8s.SampleApi\K8s.SampleApi.csproj", "{F30EBB6C-8429-475F-817F-A56E57D894D9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{84159926-8C83-41AB-9AD9-0710BF66B477}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "compose", "compose", "{96922BB8-EB78-4BBF-9C3D-ABF61908ACE9}"
+	ProjectSection(SolutionItems) = preProject
+		compose\compose.yaml = compose\compose.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "etc", "etc", "{7D9E85B0-CF1A-4DEE-A729-B93ECF5A5F91}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+		.gitattributes = .gitattributes
+		.gitignore = .gitignore
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "k8s-kind", "k8s-kind", "{29634738-35B4-49F4-B3D9-E9052D221CB4}"
+	ProjectSection(SolutionItems) = preProject
+		k8s-kind\commands.md = k8s-kind\commands.md
+		k8s-kind\three-node-cluster.yaml = k8s-kind\three-node-cluster.yaml
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "haproxy", "haproxy", "{AF5F9977-3E6A-4DE0-A5FE-E7F029439C2B}"
+	ProjectSection(SolutionItems) = preProject
+		compose\haproxy\haproxy.cfg = compose\haproxy\haproxy.cfg
+		compose\haproxy\Dockerfile = compose\haproxy\Dockerfile
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "consul", "consul", "{0AF025CD-D3CE-4486-AE44-419A9DB6CDD7}"
+	ProjectSection(SolutionItems) = preProject
+		compose\consul\Dockerfile = compose\consul\Dockerfile
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "consul-template", "consul-template", "{B9D9EE83-61E9-4FCF-B146-E4A8539747D6}"
+	ProjectSection(SolutionItems) = preProject
+		compose\consul-template\Dockerfile = compose\consul-template\Dockerfile
+		compose\consul-template\haproxy.ctmpl = compose\consul-template\haproxy.ctmpl
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F30EBB6C-8429-475F-817F-A56E57D894D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F30EBB6C-8429-475F-817F-A56E57D894D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F30EBB6C-8429-475F-817F-A56E57D894D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F30EBB6C-8429-475F-817F-A56E57D894D9}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{F30EBB6C-8429-475F-817F-A56E57D894D9} = {84159926-8C83-41AB-9AD9-0710BF66B477}
+		{AF5F9977-3E6A-4DE0-A5FE-E7F029439C2B} = {96922BB8-EB78-4BBF-9C3D-ABF61908ACE9}
+		{0AF025CD-D3CE-4486-AE44-419A9DB6CDD7} = {96922BB8-EB78-4BBF-9C3D-ABF61908ACE9}
+		{B9D9EE83-61E9-4FCF-B146-E4A8539747D6} = {96922BB8-EB78-4BBF-9C3D-ABF61908ACE9}
+	EndGlobalSection
+EndGlobal
