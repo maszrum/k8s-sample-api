@@ -26,7 +26,10 @@ spec:
           - name: GeneralSettings__UseRedis
             value: "true"
           - name: GeneralSettings__RedisConnectionString
-            value: "redis:6379"
+            valueFrom:
+              secretKeyRef:
+                name: sample-api-secrets
+                key: redis-connection-string
         readinessProbe:
           httpGet:
             port: 8080
@@ -43,6 +46,17 @@ spec:
           periodSeconds: 10
           timeoutSeconds: 3
           failureThreshold: 5
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: sample-api-secrets
+  labels:
+    k8s.io/part-of: k8s-sample-api
+type: Opaque
+data:
+  redis-connection-string: cmVkaXM6NjM3OQ==
 
 ---
 apiVersion: v1
