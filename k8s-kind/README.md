@@ -30,10 +30,6 @@ Install the Gateway API CRDs (Custom Resource Definition):
 
 > kubectl kustomize "github.com/kubernetes-sigs/gateway-api/config/crd?ref=v1.2.0" | kubectl apply -f -
 
-Inject the Istio sidecar into ``sample-api.yaml`` and apply the configuration:
-
-> istioctl kube-inject -f ./sample-api.yaml | kubectl apply -f -
-
 Forward the port from the cluster to a local host port:
 
 > kubectl port-forward service/sample-api-gateway-istio 8080:80

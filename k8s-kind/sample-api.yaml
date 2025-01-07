@@ -15,6 +15,7 @@ spec:
       labels:
         app: sample-api
         k8s.io/part-of: k8s-sample-api
+        sidecar.istio.io/inject: "true"
     spec:
       containers:
       - name: sample-api
