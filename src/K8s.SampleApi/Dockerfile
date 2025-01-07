@@ -17,6 +17,11 @@ ARG BUILD_CONFIGURATION=Release
 RUN dotnet publish "K8s.SampleApi.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
+
+USER 0
+RUN apt-get update && apt-get install -y curl
+USER $APP_UID
+
 WORKDIR /app
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "K8s.SampleApi.dll"]

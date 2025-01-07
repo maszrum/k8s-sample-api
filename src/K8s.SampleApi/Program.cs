@@ -14,6 +14,7 @@ var builder = WebApplication.CreateBuilder(args);
 var appInstanceId = new AppInstanceIdProvider();
 
 builder.Services.AddSingleton(appInstanceId);
+builder.Services.AddSingleton<ApplicationHealth>();
 
 var generalSettings = builder.Configuration
     .GetSection(nameof(GeneralSettings))
@@ -136,6 +137,21 @@ app.MapGet(
             newCounter);
     });
 
-app.MapGet("/health", () => Results.Ok());
+app.MapGet(
+    "/health",
+    ([FromServices] ApplicationHealth applicationHealth) =>
+        applicationHealth.IsHealthy ? Results.Ok() : Results.InternalServerError());
+
+app.MapPost(
+    "/health",
+    ([FromServices] ApplicationHealth applicationHealth, [FromQuery] bool? value) =>
+    {
+        if (!value.HasValue)
+        {
+            return Results.BadRequest();
+        }
+        applicationHealth.Set(value.Value);
+        return Results.Ok();
+    });
 
 app.Run();
